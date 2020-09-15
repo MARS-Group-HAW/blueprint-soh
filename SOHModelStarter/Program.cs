@@ -52,7 +52,7 @@ namespace SOHModelStarter
                     EndPoint = startPoint + TimeSpan.FromHours(24),
                     DeltaTUnit = TimeSpanUnit.Seconds,
                     ShowConsoleProgress = true,
-                    OutputTarget = OutputTargetType.None,
+                    OutputTarget = OutputTargetType.SqLite,
                     CsvOptions =
                     {
                         FileSuffix = "_" + suffix,
@@ -88,10 +88,9 @@ namespace SOHModelStarter
                     PostgresSqlOptions =
                     {
                         Host = "localhost",
-                        HostUserName = "mars",
-                        HostPassword = "sram2020",
-                        DistinctTable = true,
-                        DatabaseName = "soh1" //TODO create database first in postgres
+                        HostUserName = "postgres",
+                        HostPassword = "simulationProject",
+                        DistinctTable = true
                     }
                 },
                 LayerMappings =
