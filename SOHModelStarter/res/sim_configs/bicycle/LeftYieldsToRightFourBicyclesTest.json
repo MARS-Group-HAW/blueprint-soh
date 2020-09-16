@@ -1,0 +1,26 @@
+{
+  "globals": {
+    "deltaT": 1,
+    "startPoint": "2019-06-01T06:00:00.000Z",
+    "endPoint": "2019-06-01T06:02:00.000Z",
+    "deltaTUnit": "seconds",
+    "output": "csv",
+    "options": {
+      "delimiter": ",",
+      "numberFormat": "F"
+    }
+  },
+  "layers": [
+    {
+      "name": "DummySpawnerLayer",
+      "file": "res/networks/4WayIntersection.graphml"
+    }
+  ],
+  "agents": [
+    {
+      "name": "Cyclist",
+      "count": 4,
+      "file": "res/agent_inits/LeftYieldsToRightFourBicycleTest.csv"
+    }
+  ]
+}

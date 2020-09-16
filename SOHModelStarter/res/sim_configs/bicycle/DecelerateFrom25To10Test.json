@@ -1,0 +1,95 @@
+{
+  "globals": {
+    "deltaT": 1,
+    "startPoint": "2019-01-01T18:00:00.000Z",
+    "endPoint": "2019-01-01T18:03:20.000Z",
+    "deltaTUnit": "seconds",
+    "output": "csv",
+    "options": {
+      "delimiter": ",",
+      "numberFormat": "F2"
+    }
+  },
+  "layers": [
+    {
+      "name": "CarLayer",
+      "file": "res/networks/VeddelerDamm25To10.graphml"
+    },
+    {
+      "name": "StaticTrafficLightLayer",
+      "file": "res/traffic_lights/VeddelerDammGreenLight.csv"
+    }
+  ],
+  "agents": [
+    {
+      "name": "Cyclist",
+      "count": 1,
+      "mapping": [
+        {
+          "parameter": "length",
+          "value": 1.9
+        },
+        {
+          "parameter": "maxAcceleration",
+          "value": 3
+        },
+        {
+          "parameter": "maxDeceleration",
+          "value": 3
+        },
+        {
+          "parameter": "maxSpeed",
+          "value": 11.11
+        },
+        {
+          "parameter": "driveMode",
+          "value": 6
+        },
+        {
+          "parameter": "startLat",
+          "value": 53.527625
+        },
+        {
+          "parameter": "startLon",
+          "value": 9.981279
+        },
+        {
+          "parameter": "route",
+          "value": "[1;2]"
+        },
+        {
+          "parameter": "height",
+          "value": 1
+        },
+        {
+          "parameter": "width",
+          "value": 0.6
+        },
+        {
+          "parameter": "mass",
+          "value": 60.25
+        },
+        {
+          "parameter": "weightLoad",
+          "value": 0
+        },
+        {
+          "parameter": "bicycleType",
+          "value": "City"
+        },
+        {
+          "parameter": "velocity",
+          "value": 6.944
+        },
+        {
+          "parameter": "driverType",
+          "value": "Normal"
+        },
+        {
+          "parameter": "isEBike",
+          "value": "false"
+        }
+      ]
+    }
+  ]
+}

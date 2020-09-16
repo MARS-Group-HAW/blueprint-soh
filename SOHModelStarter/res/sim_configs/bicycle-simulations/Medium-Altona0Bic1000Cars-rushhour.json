@@ -1,0 +1,50 @@
+{
+  "globals": {
+    "deltaT": 1,
+    "startPoint": "2019-01-01T07:00:00.000Z",
+    "endPoint": "2019-01-01T08:00:00.000Z",
+    "deltaTUnit": "seconds",
+    "output": "csv",
+    "options": {
+      "delimiter": ",",
+      "numberFormat": "G"
+    }
+  },
+  "layers": [
+    {
+      "name": "CarLayer",
+      "file": "res/networks/medium_altona_drive_graph.graphml"
+    },{
+      "name": "TrafficLightLayer",
+      "file": "res/traffic_lights/traffic_lights_altona.zip"
+    }
+  ],
+  "agents": [
+    {
+      "name": "CarDriver",
+      "count": 1000,
+      "mapping": [
+        {
+          "parameter": "length",
+          "value": 5
+        },
+        {
+          "parameter": "maxSpeed",
+          "value": 13.89
+        },
+        {
+          "parameter": "driveMode",
+          "value": 1
+        },
+        {
+          "parameter": "maxAcceleration",
+          "value": 0.73
+        },
+        {
+          "parameter": "maxDeceleration",
+          "value": 1.67
+        }
+      ]
+    }
+  ]
+}

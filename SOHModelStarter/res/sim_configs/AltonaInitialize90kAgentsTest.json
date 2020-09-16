@@ -1,0 +1,47 @@
+{
+  "globals": {
+    "deltaT": 1,
+    "startPoint": "2019-01-01T06:00:00.000Z",
+    "endPoint": "2019-01-01T06:00:01.000Z",
+    "deltaTUnit": "seconds",
+    "output": "csv",
+    "options": {
+      "delimiter": ",",
+      "numberFormat": "F2"
+    }
+  },
+  "layers": [
+    {
+      "name": "CarLayer",
+      "file": "res/networks/altona_drive_graph.graphml"
+    }
+  ],
+  "agents": [
+    {
+      "name": "CarDriver",
+      "count": 90000,
+      "mapping": [
+        {
+          "parameter": "length",
+          "value": 5
+        },
+        {
+          "parameter": "maxAcceleration",
+          "value": 0.73
+        },
+        {
+          "parameter": "maxDeceleration",
+          "value": 1.67
+        },
+        {
+          "parameter": "maxSpeed",
+          "value": 13.89
+        },
+        {
+          "parameter": "driveMode",
+          "value": 2
+        }
+      ]
+    }
+  ]
+}

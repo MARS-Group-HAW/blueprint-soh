@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key attr.name="length" attr.type="string" for="edge" id="d13" />
+  <key attr.name="lsa" attr.type="bool" for="node" id="d14" />
+  <key attr.name="y" attr.type="string" for="node" id="d1"/>
+  <key attr.name="x" attr.type="string" for="node" id="d2"/>
+  <key attr.name="name" attr.type="string" for="edge" id="d3"/>
+  <graph id="G" edgedefault="directed">
+    <node id="n0">
+    	<data key="d14">true</data>
+        <data key="d1">53.57517</data>
+        <data key="d2">10.03551</data>
+    </node>
+    <node id="n1">
+    	<data key="d14">true</data>
+        <data key="d1">53.57395</data>
+        <data key="d2">10.03334</data>
+    </node>
+    <node id="n2">
+    	<data key="d14">true</data>
+        <data key="d1">53.57033</data>
+        <data key="d2">10.02719</data>
+    </node>
+    <node id="n3">
+    	<data key="d14">true</data>
+        <data key="d1">53.56911</data>
+        <data key="d2">10.02511</data>
+    </node>
+    <edge id="e0" source="n0" target="n1">
+    	<data key="d13">195</data>
+        <data key="d3">"Hamburger Strasse"</data>
+    </edge>
+    <edge id="e1" source="n1" target="n2">
+    	<data key="d13">574</data>
+        <data key="d3">"Hamburger Strasse"></data>
+    </edge>
+    <edge id="e2" source="n2" target="n3">
+    	<data key="d13">199</data>
+        <data key="d3">"Mundsburger Damm"</data>
+	</edge>
+  </graph>
+</graphml>
