@@ -12,9 +12,9 @@ Clone the Git Repo:
 git clone https://git.haw-hamburg.de/mars/model-smart-open-hamburg-po.git
 ```
 
-Download and install the SDK for NetCore 3.1 from the official [website] (https://dotnet.microsoft.com/download/dotnet-core/3.1).
+Download and install the SDK for NetCore 3.1 from the official [website](https://dotnet.microsoft.com/download/dotnet-core/3.1).
 
-Navigate into the cloned directory and make sure that all required dependencies are installed automatically by building the model in the directory where the LIFE.sln file is located:
+Navigate into the cloned directory and make sure that all required dependencies are installed automatically by building the model in the directory where the SOHModel.sln file is located:
 
 ```
 dotnet build
@@ -30,4 +30,4 @@ dotnet run
 
 The results of the model are stored after each simulated second for each agent involved. A new SQLite database with the file name *+mars.sqlite** was created in the folder **bin/Debug/netcoreapp3.1** where all data is stored.
 
-Use your preferred tool for query or visualization. We recommend the tool [Falcon SQL] (https://github.com/plotly/falcon) with which you can analyze relational queries in different ways with diagrams.
+Use your preferred tool for query or visualization. We recommend the tool [Falcon SQL](https://github.com/plotly/falcon) with which you can analyze relational queries in different ways with diagrams.
