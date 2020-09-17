@@ -343,3 +343,5 @@ Documentation/geometry
 Documentation/mathematics
 Documentation/simulation
 Documentation/site
+*.sqlite
+*.dll

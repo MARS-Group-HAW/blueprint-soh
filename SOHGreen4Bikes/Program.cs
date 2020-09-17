@@ -27,10 +27,11 @@ namespace SOHGreen4Bikes
     {
         public static void Main(string[] args)
         {
+            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("EN-US");
             LoggerFactory.SetLogLevel(LogLevel.Off);
 
             var description = new ModelDescription();
-            
+
             description.AddLayer<CarParkingLayer>();
             description.AddLayer<CarLayer>();
             description.AddLayer<BicycleParkingLayer>();
@@ -45,10 +46,14 @@ namespace SOHGreen4Bikes
             var config = CreateDefaultConfig();
 
             ISimulationContainer application;
-            
+
             if (args != null && args.Any())
             {
-                application = SimulationStarter.BuildApplication(description, args);
+                var file = File.ReadAllText(Path.Combine(ResourcesConstants.SimConfigFolder, args[0]));
+                var simConfig = SimulationConfig.Deserialize(file);
+                Console.WriteLine($"Use simulation config: {args[0]}");
+                Console.WriteLine(simConfig.Serialize());
+                application = SimulationStarter.BuildApplication(description, simConfig);
             }
             else
             {
@@ -56,23 +61,26 @@ namespace SOHGreen4Bikes
                 Console.WriteLine(config.Serialize());
                 application = SimulationStarter.BuildApplication(description, config);
             }
-            
+
             var simulation = application.Resolve<ISimulation>();
-            
+
             var watch = Stopwatch.StartNew();
             var state = simulation.StartSimulation();
+
             var layers = state.Model.AllActiveLayers;
 
-            
+
             foreach (var layer in layers)
             {
-                if (!(layer is CitizenLayer citizenLayer)) continue;
-                var citizens = citizenLayer.PedestrianMap.Values;
-                TripsOutputAdapter.PrintTripResult(citizens);
+                if ((layer is CitizenLayer citizenLayer))
+                {
+                    var citizens = citizenLayer.PedestrianMap.Values;
+                    TripsOutputAdapter.PrintTripResult(citizens);
+                }
             }
 
             watch.Stop();
-            
+
             Console.WriteLine($"Executed iterations {state.Iterations} lasted {watch.Elapsed}");
             application.Dispose();
         }
@@ -115,42 +123,43 @@ namespace SOHGreen4Bikes
                     new LayerMapping
                     {
                         Name = nameof(TrafficLightLayer),
-                        File = ResourcesConstants.TrafficLightsAltona
+                        File = ResourcesConstants.TrafficLightsHarburgZentrum
                     },
                     new LayerMapping
                     {
                         Name = nameof(VectorBuildingsLayer),
-                        File = Path.Combine(ResourcesConstants.VectorDataFolder, "Buildings_Harburg.geojson")
+                        File = Path.Combine(ResourcesConstants.VectorDataFolder, "Buildings_Harburg_zentrum.geojson")
                     },
                     new LayerMapping
                     {
                         Name = nameof(VectorLanduseLayer),
-                        File = Path.Combine(ResourcesConstants.VectorDataFolder, "Landuse_Harburg.geojson")
+                        File = Path.Combine(ResourcesConstants.VectorDataFolder, "Landuse_Harburg_zentrum.geojson")
                     },
                     new LayerMapping
                     {
                         Name = nameof(VectorPoiLayer),
-                        File = Path.Combine(ResourcesConstants.VectorDataFolder, "POIS_Harburg.geojson")
+                        File = Path.Combine(ResourcesConstants.VectorDataFolder, "POIS_Harburg_zentrum.geojson")
                     },
                     new LayerMapping
                     {
                         Name = nameof(CarLayer),
-                        File = Path.Combine(ResourcesConstants.GraphFolder, "harburg_drive_graph.graphml")
+                        File = Path.Combine(ResourcesConstants.GraphFolder, "harburg_zentrum_drive_graph.geojson")
                     },
                     new LayerMapping
                     {
                         Name = nameof(CarParkingLayer),
-                        File = Path.Combine(ResourcesConstants.VectorDataFolder, "Parking_Harburg.geojson")
+                        File = Path.Combine(ResourcesConstants.VectorDataFolder, "Parking_Harburg_zentrum.geojson")
                     },
                     new LayerMapping
                     {
                         Name = nameof(BicycleParkingLayer),
-                        File = Path.Combine(ResourcesConstants.VectorDataFolder, "Bicycle_Rental_Harburg.geojson")
+                        File = Path.Combine(ResourcesConstants.VectorDataFolder,
+                            "Bicycle_Rental_Harburg_zentrum.geojson")
                     },
                     new LayerMapping
                     {
                         Name = nameof(CitizenLayer),
-                        File = Path.Combine(ResourcesConstants.GraphFolder, "harburg_walk_graph.graphml"),
+                        File = Path.Combine(ResourcesConstants.GraphFolder, "harburg_zentrum_walk_graph.geojson"),
                         IndividualMapping =
                         {
                             new IndividualMapping {Name = "ParkingOccupancy", Value = 0.779}
@@ -168,8 +177,8 @@ namespace SOHGreen4Bikes
                         IndividualMapping =
                         {
                             new IndividualMapping {Name = "ResultTrajectoryEnabled", Value = true},
-                            new IndividualMapping {Name = "CanCycle", Value = true},
-                            new IndividualMapping {Name = "CanDriveWithProbability", Value = 0.326},
+                            new IndividualMapping {Name = "CapabilityCycling", Value = true},
+                            new IndividualMapping {Name = "CapabilityDrivingWithProbability", Value = 0.326},
                         }
                     }
                 }

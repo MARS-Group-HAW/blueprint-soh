@@ -1,11 +1,15 @@
-﻿﻿using System;
+﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using Mars.Common.Logging;
 using Mars.Common.Logging.Enums;
 using Mars.Components.Starter;
 using Mars.Core.Model.Entities;
 using Mars.Core.Simulation;
+using Mars.Interfaces;
 using SOHBicycleModel.Rental;
 using SOHCarModel.Model;
 using SOHCarModel.Parking;
@@ -18,11 +22,10 @@ namespace SOHModelStarter
 {
     internal static class Program
     {
-        private static void Main()
+        private static void Main(string[] args)
         {
-            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("EN-US");
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("EN-US");
             LoggerFactory.SetLogLevel(LogLevel.Off);
-            LoggerFactory.ActivateConsoleLogging();
 
             var description = new ModelDescription();
             description.AddLayer<CarParkingLayer>();
@@ -36,29 +39,55 @@ namespace SOHModelStarter
             description.AddLayer<TrafficLightLayer>();
             description.AddAgent<Citizen, CitizenLayer>();
 
-            var startPoint = DateTime.Parse("2020-01-01T00:00:00");
 
+            ISimulationContainer application;
+            if (args != null && args.Any())
+            {
+                application = SimulationStarter.BuildApplication(description, args);
+            }
+            else
+            {
+                var config = GetConfig();
+                application = SimulationStarter.BuildApplication(description, config);
+            }
+
+            var simulation = application.Resolve<ISimulation>();
+
+            var watch = Stopwatch.StartNew();
+            var state = simulation.StartSimulation();
+            watch.Stop();
+
+            Console.WriteLine($"Executed iterations {state.Iterations} lasted {watch.Elapsed}");
+        }
+
+        private static SimulationConfig GetConfig()
+        {
+            SimulationConfig simulationConfig;
+            var configValue = Environment.GetEnvironmentVariable("CONFIG");
+
+            if (configValue != null)
+            {
+                Console.WriteLine("Use passed simulation config by environment variable");
+                simulationConfig = SimulationConfig.Deserialize(configValue);
+                Console.WriteLine(simulationConfig.Serialize());
+            }
+
+
+            var startPoint = DateTime.Parse("2020-01-01T00:00:00");
             var suffix = DateTime.Now.ToString("yyyyMMddHHmm");
             var config = new SimulationConfig
             {
-                // Execution =
-                // {
-                //     MaximalLocalProcess = 1,
-                // },
-                SimulationIdentifier = "h1-1",
-                Globals =
+                Execution =
+                {
+                    MaximalLocalProcess = 1
+                },
+                    Globals =
                 {
                     StartPoint = startPoint,
                     EndPoint = startPoint + TimeSpan.FromHours(24),
                     DeltaTUnit = TimeSpanUnit.Seconds,
                     ShowConsoleProgress = true,
                     OutputTarget = OutputTargetType.SqLite,
-                    CsvOptions =
-                    {
-                        FileSuffix = "_" + suffix,
-                        Delimiter = ",",
-                        IncludeHeader = true
-                    },
                     // SgeOption =
                     // {
                     //     File = "bicycle.graph",
@@ -84,13 +113,6 @@ namespace SOHModelStarter
                     SqLiteOptions =
                     {
                         DistinctTable = false
-                    },
-                    PostgresSqlOptions =
-                    {
-                        Host = "localhost",
-                        HostUserName = "postgres",
-                        HostPassword = "simulationProject",
-                        DistinctTable = true
                     }
                 },
                 LayerMappings =
@@ -98,6 +120,7 @@ namespace SOHModelStarter
                     new LayerMapping
                     {
                         Name = nameof(TrafficLightLayer),
+                        OutputTarget = OutputTargetType.None,
                         File = ResourcesConstants.TrafficLightsAltona
                     },
                     new LayerMapping
@@ -109,32 +132,38 @@ namespace SOHModelStarter
                     new LayerMapping
                     {
                         Name = nameof(VectorLanduseLayer),
+                        OutputTarget = OutputTargetType.None,
                         File = Path.Combine(ResourcesConstants.VectorDataFolder, "Landuse_Altona_altstadt.geojson")
                     },
                     new LayerMapping
                     {
                         Name = nameof(VectorPoiLayer),
+                        OutputTarget = OutputTargetType.None,
                         File = Path.Combine(ResourcesConstants.VectorDataFolder, "POIS_Altona_altstadt.geojson")
                     },
                     new LayerMapping
                     {
                         Name = nameof(CarLayer),
+                        OutputTarget = OutputTargetType.None,
                         File = Path.Combine(ResourcesConstants.GraphFolder, "altona_altstadt_drive_graph.graphml")
                     },
                     new LayerMapping
                     {
                         Name = nameof(CarParkingLayer),
+                        OutputTarget = OutputTargetType.None,
                         File = Path.Combine(ResourcesConstants.VectorDataFolder, "Parking_Altona_altstadt.geojson")
                     },
                     new LayerMapping
                     {
                         Name = nameof(BicycleParkingLayer),
+                        OutputTarget = OutputTargetType.None,
                         File = Path.Combine(ResourcesConstants.VectorDataFolder,
                             "Bicycle_Rental_Altona_altstadt.geojson")
                     },
                     new LayerMapping
                     {
                         Name = nameof(CitizenLayer),
+                        OutputTarget = OutputTargetType.None,
                         File = Path.Combine(ResourcesConstants.GraphFolder, "altona_altstadt_walk_graph.graphml"),
                         IndividualMapping =
                         {
@@ -147,10 +176,11 @@ namespace SOHModelStarter
                     new AgentMapping
                     {
                         Name = nameof(Citizen),
-                        InstanceCount = 10000,
+                        InstanceCount = 1,
+                        OutputTarget = OutputTargetType.SqLite,
                         File = Path.Combine("res", "agent_inits", "CitizenInit10k.csv"),
-                        Options = {{"csvSeparator", ';'}},
-                        OutputFilter =
+                        
+                        OutputFilter =    
                         {
                             new OutputFilter
                             {
@@ -159,40 +189,24 @@ namespace SOHModelStarter
                                 Operator = ContainsOperator.In
                             }
                         },
+                        Options = {{"csvSeparator", ';'}},
                         IndividualMapping =
                         {
-                            new IndividualMapping {Name = "CanDrive", Value = true},
-                            new IndividualMapping {Name = "CanCycle", Value = true}
-                            // new IndividualMapping {Name = "CanDriveWithProbability", Value = 0.326},
+                            new IndividualMapping {Name = "CapabilityDriving", Value = true},
+                            new IndividualMapping {Name = "CapabilityCycling", Value = true}
+                            // new IndividualMapping {Name = "CapabilityDrivingWithProbability", Value = 0.326},
                         }
                     }
                 }
             };
 
-            SimulationConfig simulationConfig;
-            var configValue = Environment.GetEnvironmentVariable("CONFIG");
-            if (configValue != null)
-            {
-                Console.WriteLine("Use passed simulation config by environment variable");
-                simulationConfig = SimulationConfig.Deserialize(configValue);
-            }
-            else
-            {
-                Console.WriteLine("Use pre-defined simulation config");
-                simulationConfig = config;
-            }
+            Console.WriteLine("Use pre-defined simulation config");
+            simulationConfig = config;
 
             Console.WriteLine("Used simulation config:");
             Console.WriteLine(simulationConfig.Serialize());
 
-            var application = SimulationStarter.BuildApplication();
-            var simulation = application.Resolve<ISimulation>();
-
-            simulation.PrepareInfrastructure(description, simulationConfig);
-            var watch = Stopwatch.StartNew();
-            var state = simulation.StartSimulation();
-            watch.Stop();
-            Console.WriteLine($"Executed iterations {state.Iterations} lasted {watch.Elapsed}");
+            return config;
         }
     }
 }

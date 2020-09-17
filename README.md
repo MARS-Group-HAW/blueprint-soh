@@ -25,6 +25,7 @@ We have prepared a scenario in the project SOHModelStarter for the entry with 10
 Navigate to the folder and start the model:
 
 ```
+cd SOHModelStarter
 dotnet run
 ```
 
