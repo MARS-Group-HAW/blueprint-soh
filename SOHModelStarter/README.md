@@ -18,7 +18,7 @@ description.AddAgent<Citizen, CitizenLayer>();
 
 ___
 
-## Globals
+## <a name="globals">Globals</a>
 
 This section contains a set of attributes that allow for general configuration of the model. Below is an example and brief description of the main attributes.
 
@@ -56,7 +56,7 @@ ___
 
 In this section, the layer types that are defined in the model logic (and that were added to `description` above) are configured and populated with external data. 
 
-```JSON
+```c#
 LayerMappings =
 {
     new LayerMapping
@@ -78,7 +78,7 @@ ___
 
 In this section, the agent types that are defined in the model logic (and that were added to `desciption` above) are configured. An initialization file can be specified as well.
 
-```json
+```c#
 AgentMappings =
 {
     new AgentMapping
@@ -97,4 +97,4 @@ For each agent type added to `description`, an AgentMapping needs to be defined.
 * `InstanceCount`: the number of agents of this agent type that are to be instantiated
 * `File`: the path to the agent type's initialization file (see [SOHResources](../SOHResources/README.md) documentation for more information)
 
-The `OutputTarget` key defines the medium into which simulation output data is to be saved. It is optional at the AgentMapping level. Alternatively, it can be defined globally (see [Globals](#Globals)).
+The `OutputTarget` key defines the medium into which simulation output data is to be saved. It is optional at the AgentMapping level. Alternatively, it can be defined globally (see <a href="#globals">Globals</a>).
