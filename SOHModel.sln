@@ -16,6 +16,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SOHResources", "SOHResource
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SOHTests", "SOHTests\SOHTests.csproj", "{96AF48FE-E7DA-489E-AD8C-F02FFE74CB89}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SOHFerryTransferBox", "SOHFerryTransferBox\SOHFerryTransferBox.csproj", "{1565FD94-841F-4587-B95B-6FAA1CC3844A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SOHFerryModel", "SOHFerryModel\SOHFerryModel.csproj", "{0A8E497E-16AF-46B1-81E3-7B6D5F56F464}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,5 +58,13 @@ Global
 		{96AF48FE-E7DA-489E-AD8C-F02FFE74CB89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96AF48FE-E7DA-489E-AD8C-F02FFE74CB89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96AF48FE-E7DA-489E-AD8C-F02FFE74CB89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1565FD94-841F-4587-B95B-6FAA1CC3844A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1565FD94-841F-4587-B95B-6FAA1CC3844A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1565FD94-841F-4587-B95B-6FAA1CC3844A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1565FD94-841F-4587-B95B-6FAA1CC3844A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A8E497E-16AF-46B1-81E3-7B6D5F56F464}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A8E497E-16AF-46B1-81E3-7B6D5F56F464}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A8E497E-16AF-46B1-81E3-7B6D5F56F464}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A8E497E-16AF-46B1-81E3-7B6D5F56F464}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
