@@ -10,17 +10,15 @@ using Mars.Components.Starter;
 using Mars.Core.Model.Entities;
 using Mars.Core.Simulation;
 using Mars.Interfaces;
-using SOHBicycleModel.Rental;
-using SOHCarModel.Model;
-using SOHCarModel.Parking;
-using SOHMultimodalModel.Layers;
-using SOHMultimodalModel.Layers.TrafficLight;
+using SOHFerryModel.Model;
+using SOHFerryModel.Route;
+using SOHFerryModel.Station;
 using SOHMultimodalModel.Model;
 using SOHResources;
 
-namespace SOHModelStarter
+namespace SOHFerryTransferBox
 {
-    internal static class Program
+    internal class Program
     {
         private static void Main(string[] args)
         {
@@ -28,16 +26,20 @@ namespace SOHModelStarter
             LoggerFactory.SetLogLevel(LogLevel.Off);
 
             var description = new ModelDescription();
-            description.AddLayer<CarParkingLayer>();
-            description.AddLayer<CarLayer>();
-            description.AddLayer<BicycleParkingLayer>();
-            description.AddLayer<VectorBuildingsLayer>();
-            description.AddLayer<VectorLanduseLayer>();
-            description.AddLayer<VectorPoiLayer>();
-            description.AddLayer<MediatorLayer>();
+            // description.AddLayer<CarParkingLayer>();
+            // description.AddLayer<CarLayer>();
+            // description.AddLayer<BicycleParkingLayer>();
+            // description.AddLayer<VectorBuildingsLayer>();
+            // description.AddLayer<VectorLanduseLayer>();
+            // description.AddLayer<VectorPoiLayer>();
+            // description.AddLayer<MediatorLayer>();
             description.AddLayer<CitizenLayer>();
-            description.AddLayer<TrafficLightLayer>();
+            description.AddLayer<FerryLayer>();
+            description.AddLayer<FerryStationLayer>();
+            description.AddLayer<FerryRouteLayer>();
+            // description.AddLayer<TrafficLightLayer>();
             description.AddAgent<Citizen, CitizenLayer>();
+            description.AddAgent<FerryDriver, FerryLayer>();
 
 
             ISimulationContainer application;
@@ -72,7 +74,6 @@ namespace SOHModelStarter
                 Console.WriteLine(simulationConfig.Serialize());
             }
 
-
             var startPoint = DateTime.Parse("2020-01-01T00:00:00");
             var config = new SimulationConfig
             {
@@ -87,28 +88,6 @@ namespace SOHModelStarter
                     DeltaTUnit = TimeSpanUnit.Seconds,
                     ShowConsoleProgress = true,
                     OutputTarget = OutputTargetType.SqLite,
-                    // SgeOption =
-                    // {
-                    //     File = "bicycle.graph",
-                    //     Files = new object[3]
-                    //     {
-                    //         {
-                    //             GraphFile = "bicycle.graphml",
-                    //             Modality = "Bicycle",
-                    //             PreventCollision = false
-                    //         },
-                    //         {
-                    //             GraphFile = "bicycle.graphml",
-                    //             Modality = "",
-                    //             PreventCollision = false
-                    //         },
-                    //         {
-                    //             GraphFile = "car.graphml",
-                    //             Modality = "Car",
-                    //             PreventCollision = true
-                    //         }
-                    //     }
-                    // },
                     SqLiteOptions =
                     {
                         DistinctTable = false
@@ -118,52 +97,32 @@ namespace SOHModelStarter
                 {
                     new LayerMapping
                     {
-                        Name = nameof(TrafficLightLayer),
+                        Name = nameof(FerryStationLayer),
                         OutputTarget = OutputTargetType.None,
-                        File = ResourcesConstants.TrafficLightsAltona
+                        File = ResourcesConstants.FerryStations
                     },
                     new LayerMapping
                     {
-                        Name = nameof(VectorBuildingsLayer),
-                        File = Path.Combine(ResourcesConstants.VectorDataFolder,
-                            "Buildings_Altona_altstadt.geojson")
+                        Name = nameof(FerryRouteLayer),
+                        File = ResourcesConstants.FerryLineCsv
                     },
                     new LayerMapping
                     {
-                        Name = nameof(VectorLanduseLayer),
+                        Name = nameof(FerryLayer),
                         OutputTarget = OutputTargetType.None,
-                        File = Path.Combine(ResourcesConstants.VectorDataFolder, "Landuse_Altona_altstadt.geojson")
+                        File = ResourcesConstants.FerryGraph
                     },
                     new LayerMapping
                     {
-                        Name = nameof(VectorPoiLayer),
+                        Name = nameof(FerrySchedulerLayer),
                         OutputTarget = OutputTargetType.None,
-                        File = Path.Combine(ResourcesConstants.VectorDataFolder, "POIS_Altona_altstadt.geojson")
-                    },
-                    new LayerMapping
-                    {
-                        Name = nameof(CarLayer),
-                        OutputTarget = OutputTargetType.None,
-                        File = Path.Combine(ResourcesConstants.NetworkFolder, "altona_altstadt_drive_graph.graphml")
-                    },
-                    new LayerMapping
-                    {
-                        Name = nameof(CarParkingLayer),
-                        OutputTarget = OutputTargetType.None,
-                        File = Path.Combine(ResourcesConstants.VectorDataFolder, "Parking_Altona_altstadt.geojson")
-                    },
-                    new LayerMapping
-                    {
-                        Name = nameof(BicycleParkingLayer),
-                        OutputTarget = OutputTargetType.None,
-                        File = Path.Combine(ResourcesConstants.VectorDataFolder,
-                            "Bicycle_Rental_Altona_altstadt.geojson")
+                        File = ResourcesConstants.FerryDriverCsv
                     },
                     new LayerMapping
                     {
                         Name = nameof(CitizenLayer),
                         OutputTarget = OutputTargetType.None,
-                        File = Path.Combine(ResourcesConstants.NetworkFolder, "altona_altstadt_walk_graph.graphml"),
+                        File = ResourcesConstants.FerryContainerWalkingGraph,
                         IndividualMapping =
                         {
                             new IndividualMapping {Name = "ParkingOccupancy", Value = 0.779}
@@ -175,10 +134,9 @@ namespace SOHModelStarter
                     new AgentMapping
                     {
                         Name = nameof(Citizen),
-                        InstanceCount = 1,
+                        InstanceCount = 100,
                         OutputTarget = OutputTargetType.SqLite,
                         File = Path.Combine("res", "agent_inits", "CitizenInit10k.csv"),
-
                         OutputFilter =
                         {
                             new OutputFilter
@@ -192,9 +150,15 @@ namespace SOHModelStarter
                         IndividualMapping =
                         {
                             new IndividualMapping {Name = "ResultTrajectoryEnabled", Value = true},
-                            new IndividualMapping {Name = "CapabilityDriving", Value = true},
-                            new IndividualMapping {Name = "CapabilityCycling", Value = true}
+                            new IndividualMapping {Name = "CapabilityDriving", Value = false},
+                            new IndividualMapping {Name = "CapabilityCycling", Value = false}
                         }
+                    },
+                    new AgentMapping
+                    {
+                        Name = nameof(FerryDriver),
+                        InstanceCount = 5,
+                        OutputTarget = OutputTargetType.SqLite
                     }
                 }
             };

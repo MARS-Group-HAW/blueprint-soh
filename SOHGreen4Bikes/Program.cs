@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Mars.Common.Logging;
 using Mars.Common.Logging.Enums;
 using Mars.Components.Starter;
@@ -27,7 +29,7 @@ namespace SOHGreen4Bikes
     {
         public static void Main(string[] args)
         {
-            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("EN-US");
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("EN-US");
             LoggerFactory.SetLogLevel(LogLevel.Off);
 
             var description = new ModelDescription();
@@ -71,13 +73,11 @@ namespace SOHGreen4Bikes
 
 
             foreach (var layer in layers)
-            {
-                if ((layer is CitizenLayer citizenLayer))
+                if (layer is CitizenLayer citizenLayer)
                 {
                     var citizens = citizenLayer.PedestrianMap.Values;
                     TripsOutputAdapter.PrintTripResult(citizens);
                 }
-            }
 
             watch.Stop();
 
@@ -91,7 +91,7 @@ namespace SOHGreen4Bikes
             var suffix = DateTime.Now.ToString("yyyyMMddHHmm");
             var config = new SimulationConfig
             {
-                SimulationIdentifier = "h1-1",
+                SimulationIdentifier = "green4bikes",
                 Globals =
                 {
                     StartPoint = startPoint,
@@ -143,7 +143,7 @@ namespace SOHGreen4Bikes
                     new LayerMapping
                     {
                         Name = nameof(CarLayer),
-                        File = Path.Combine(ResourcesConstants.GraphFolder, "harburg_zentrum_drive_graph.geojson")
+                        File = Path.Combine(ResourcesConstants.NetworkFolder, "harburg_zentrum_drive_graph.geojson")
                     },
                     new LayerMapping
                     {
@@ -159,7 +159,7 @@ namespace SOHGreen4Bikes
                     new LayerMapping
                     {
                         Name = nameof(CitizenLayer),
-                        File = Path.Combine(ResourcesConstants.GraphFolder, "harburg_zentrum_walk_graph.geojson"),
+                        File = Path.Combine(ResourcesConstants.NetworkFolder, "harburg_zentrum_walk_graph.geojson"),
                         IndividualMapping =
                         {
                             new IndividualMapping {Name = "ParkingOccupancy", Value = 0.779}
@@ -178,7 +178,7 @@ namespace SOHGreen4Bikes
                         {
                             new IndividualMapping {Name = "ResultTrajectoryEnabled", Value = true},
                             new IndividualMapping {Name = "CapabilityCycling", Value = true},
-                            new IndividualMapping {Name = "CapabilityDrivingWithProbability", Value = 0.326},
+                            new IndividualMapping {Name = "CapabilityDrivingWithProbability", Value = 0.326}
                         }
                     }
                 }
