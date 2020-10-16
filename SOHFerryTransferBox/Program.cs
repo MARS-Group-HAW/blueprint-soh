@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using Mars.Common;
 using Mars.Common.Logging;
 using Mars.Common.Logging.Enums;
 using Mars.Components.Starter;
@@ -14,33 +14,29 @@ using SOHFerryModel.Model;
 using SOHFerryModel.Route;
 using SOHFerryModel.Station;
 using SOHMultimodalModel.Model;
-using SOHResources;
+using SOHMultimodalModel.Output.Trips;
 
 namespace SOHFerryTransferBox
 {
-    internal class Program
+    internal static class Program
     {
         private static void Main(string[] args)
         {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("EN-US");
-            LoggerFactory.SetLogLevel(LogLevel.Off);
+            // Thread.CurrentThread.CurrentCulture = new CultureInfo("EN-US");
+            LoggerFactory.SetLogLevel(LogLevel.Info);
 
             var description = new ModelDescription();
-            // description.AddLayer<CarParkingLayer>();
-            // description.AddLayer<CarLayer>();
-            // description.AddLayer<BicycleParkingLayer>();
-            // description.AddLayer<VectorBuildingsLayer>();
-            // description.AddLayer<VectorLanduseLayer>();
-            // description.AddLayer<VectorPoiLayer>();
-            // description.AddLayer<MediatorLayer>();
-            description.AddLayer<CitizenLayer>();
             description.AddLayer<FerryLayer>();
+            description.AddLayer<FerrySchedulerLayer>();
             description.AddLayer<FerryStationLayer>();
             description.AddLayer<FerryRouteLayer>();
-            // description.AddLayer<TrafficLightLayer>();
-            description.AddAgent<Citizen, CitizenLayer>();
-            description.AddAgent<FerryDriver, FerryLayer>();
+            description.AddLayer<DockWorkerLayer>();
+            description.AddLayer<DockWorkerSchedulerLayer>();
 
+            description.AddAgent<FerryDriver, FerryLayer>();
+            description.AddAgent<DockWorker, DockWorkerLayer>();
+
+            description.AddEntity<Ferry>();
 
             ISimulationContainer application;
             if (args != null && args.Any())
@@ -60,6 +56,46 @@ namespace SOHFerryTransferBox
             watch.Stop();
 
             Console.WriteLine($"Executed iterations {state.Iterations} lasted {watch.Elapsed}");
+
+            var modelAllActiveLayers = state.Model.Layers;
+            List<ITripSavingAgent> agents = new List<ITripSavingAgent>();
+            foreach (var pair in modelAllActiveLayers)
+            {
+                var layer = pair.Value;
+                    
+                if (layer is FerryLayer ferryLayer)
+                {
+                    var tm =
+                        description.SimulationConfig.TypeMappings.FirstOrDefault(m => m.Name == "FerryDriver");
+                    if (tm != null)
+                    {
+                        if (tm.ParameterMapping.TryGetValue("ResultTrajectoryEnabled", out var p) &&
+                            p.Value != null && p.Value.Value<bool>())
+                        {
+                            // agents.AddRange(ferryLayer.Driver.Select(valuePair => valuePair.Value));
+                        }
+                    }
+                }
+                
+                
+                if (layer is DockWorkerLayer dockWorkerLayer)
+                {
+                    var tm =
+                        description.SimulationConfig.TypeMappings.FirstOrDefault(m => m.Name == "DockWorker");
+                    if (tm != null)
+                    {
+                        if (tm.ParameterMapping.TryGetValue("ResultTrajectoryEnabled", out var p) &&
+                            p.Value != null && p.Value.Value<bool>())
+                        {
+                            agents.AddRange(dockWorkerLayer.Agents.Select(valuePair => valuePair.Value));
+                        }
+                    }
+                }
+
+                
+            }
+
+            TripsOutputAdapter.PrintTripResult(agents);
         }
 
         private static SimulationConfig GetConfig()
@@ -74,91 +110,78 @@ namespace SOHFerryTransferBox
                 Console.WriteLine(simulationConfig.Serialize());
             }
 
-            var startPoint = DateTime.Parse("2020-01-01T00:00:00");
+            var startPoint = DateTime.Parse("2020-01-01T06:00:00");
             var config = new SimulationConfig
             {
-                Execution =
-                {
-                    MaximalLocalProcess = 1
-                },
                 Globals =
                 {
                     StartPoint = startPoint,
-                    EndPoint = startPoint + TimeSpan.FromHours(24),
+                    EndPoint = startPoint + TimeSpan.FromHours(2),
                     DeltaTUnit = TimeSpanUnit.Seconds,
                     ShowConsoleProgress = true,
-                    OutputTarget = OutputTargetType.SqLite,
-                    SqLiteOptions =
-                    {
-                        DistinctTable = false
-                    }
+                    OutputTarget = OutputTargetType.None
                 },
                 LayerMappings =
                 {
                     new LayerMapping
                     {
+                        Name = nameof(DockWorkerLayer),
+                        OutputTarget = OutputTargetType.None,
+                        File = Path.Combine("resources", "hamburg_south_graph_filtered.geojson")
+                    },
+                    new LayerMapping
+                    {
+                        Name = nameof(DockWorkerSchedulerLayer),
+                        OutputTarget = OutputTargetType.None,
+                        File = Path.Combine("resources", "dock_worker.csv")
+                    },
+                    new LayerMapping
+                    {
                         Name = nameof(FerryStationLayer),
                         OutputTarget = OutputTargetType.None,
-                        File = ResourcesConstants.FerryStations
+                        File = Path.Combine("resources", "hamburg_ferry_stations.geojson")
                     },
                     new LayerMapping
                     {
                         Name = nameof(FerryRouteLayer),
-                        File = ResourcesConstants.FerryLineCsv
+                        File = Path.Combine("resources", "ferry_line.csv")
                     },
                     new LayerMapping
                     {
                         Name = nameof(FerryLayer),
                         OutputTarget = OutputTargetType.None,
-                        File = ResourcesConstants.FerryGraph
+                        File = Path.Combine("resources", "hamburg_ferry_graph.geojson")
                     },
                     new LayerMapping
                     {
                         Name = nameof(FerrySchedulerLayer),
                         OutputTarget = OutputTargetType.None,
-                        File = ResourcesConstants.FerryDriverCsv
-                    },
-                    new LayerMapping
-                    {
-                        Name = nameof(CitizenLayer),
-                        OutputTarget = OutputTargetType.None,
-                        File = ResourcesConstants.FerryContainerWalkingGraph,
-                        IndividualMapping =
-                        {
-                            new IndividualMapping {Name = "ParkingOccupancy", Value = 0.779}
-                        }
+                        File = Path.Combine("resources", "ferry_driver.csv")
                     }
                 },
                 AgentMappings =
                 {
                     new AgentMapping
                     {
-                        Name = nameof(Citizen),
-                        InstanceCount = 100,
-                        OutputTarget = OutputTargetType.SqLite,
-                        File = Path.Combine("res", "agent_inits", "CitizenInit10k.csv"),
-                        OutputFilter =
-                        {
-                            new OutputFilter
-                            {
-                                Name = "StoreTickResult",
-                                Values = new object[] {true},
-                                Operator = ContainsOperator.In
-                            }
-                        },
-                        Options = {{"csvSeparator", ';'}},
+                        Name = nameof(DockWorker),
+                        OutputTarget = OutputTargetType.None,
                         IndividualMapping =
                         {
-                            new IndividualMapping {Name = "ResultTrajectoryEnabled", Value = true},
-                            new IndividualMapping {Name = "CapabilityDriving", Value = false},
-                            new IndividualMapping {Name = "CapabilityCycling", Value = false}
+                            new IndividualMapping {Name = "ResultTrajectoryEnabled", Value = true}
                         }
                     },
                     new AgentMapping
                     {
                         Name = nameof(FerryDriver),
-                        InstanceCount = 5,
-                        OutputTarget = OutputTargetType.SqLite
+                        OutputTarget = OutputTargetType.None
+                    }
+                },
+                EntityMappings =
+                {
+                    new EntityMapping
+                    {
+                        Name = nameof(Ferry),
+                        File = Path.Combine("resources", "ferry.csv")
                     }
                 }
             };

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SOHResources\SOHResources.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="NetTopologySuite.IO.GeoJSON" Version="1.15.5" />
+    </ItemGroup>
+
+</Project>

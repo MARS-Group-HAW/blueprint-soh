@@ -44,6 +44,7 @@ namespace SOHGreen4Bikes
             description.AddLayer<CitizenLayer>();
             description.AddLayer<TrafficLightLayer>();
             description.AddAgent<Citizen, CitizenLayer>();
+            
 
             var config = CreateDefaultConfig();
 
@@ -73,11 +74,13 @@ namespace SOHGreen4Bikes
 
 
             foreach (var layer in layers)
+            {
                 if (layer is CitizenLayer citizenLayer)
                 {
                     var citizens = citizenLayer.PedestrianMap.Values;
                     TripsOutputAdapter.PrintTripResult(citizens);
                 }
+            }
 
             watch.Stop();
 
