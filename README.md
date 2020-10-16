@@ -2,6 +2,16 @@
 
 The SmartOpenHamburg model is an agent-based simulation model for the representation of a digital twin. It calculates multi-modal path dynamics and simulates a defined daily routine of a citizen.
 
+## Contents
+
+The repository contains three projects and a number of libraries to support them. For more information on each model and the libraries, please check out the README.md in the respective subdirectory.
+
+Models:
+
+1. SOHModelStarter: a model that is geared towards determining optimal routes using several modes of travel (modalities). Per default, the model is set in the district of Altona, Hamburg to run for 24 simulation hours with one agent (type `Citizen`) who is able to travel by walking on foot, riding a bicycle, and driving a car. The agent has a predefined daily routine which includes activities like work, errands, and others.
+2. SOHGreen4Bikes: a model that is focused on travel by bike (to ease network congestion in and around the simulation environment) in a small section of the central part of the district of Harburg, Hamburg. The model is set to run with 10 agents (type: `Citizen`) for 24 simulation hours. These agents have predefined daily routines which include activities like work, errands, and others.
+3. SOHFerryTransferBox: 
+
 ## Quick Start
 
 Start and adjusting the model requires the following steps.
