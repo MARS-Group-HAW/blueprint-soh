@@ -4,6 +4,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Mars.Common;
+using Mars.Common.Collections;
+using Mars.Common.IO.Mapped.Collections;
 using Mars.Common.Logging;
 using Mars.Common.Logging.Enums;
 using Mars.Components.Starter;
@@ -13,9 +16,11 @@ using Mars.Interfaces;
 using SOHBicycleModel.Rental;
 using SOHCarModel.Model;
 using SOHCarModel.Parking;
+using SOHFerryModel.Model;
 using SOHMultimodalModel.Layers;
 using SOHMultimodalModel.Layers.TrafficLight;
 using SOHMultimodalModel.Model;
+using SOHMultimodalModel.Output.Trips;
 using SOHResources;
 
 namespace SOHModelStarter
@@ -57,7 +62,35 @@ namespace SOHModelStarter
             var state = simulation.StartSimulation();
             watch.Stop();
 
+            
+            var modelAllActiveLayers = state.Model.Layers;
+            List<ITripSavingAgent> agents = new List<ITripSavingAgent>();
+            foreach (var pair in modelAllActiveLayers)
+            {
+                var layer = pair.Value;
+
+                if (layer is CitizenLayer citizenLayer)
+                {
+                    var tm =
+                        description.SimulationConfig.TypeMappings.FirstOrDefault(m => m.Name == "Citizen");
+                    if (tm != null)
+                    {
+                        if (tm.ParameterMapping.TryGetValue("ResultTrajectoryEnabled", out var p) &&
+                            p.Value != null && p.Value.Value<bool>())
+                        {
+                            agents.AddRange(citizenLayer.PedestrianMap.Values);
+                        }
+                    }
+                }
+            }
+
+            TripsOutputAdapter.PrintTripResult(agents);
+            
+            
             Console.WriteLine($"Executed iterations {state.Iterations} lasted {watch.Elapsed}");
+            
+            
+            
         }
 
         private static SimulationConfig GetConfig()
@@ -76,14 +109,10 @@ namespace SOHModelStarter
             var startPoint = DateTime.Parse("2020-01-01T00:00:00");
             var config = new SimulationConfig
             {
-                Execution =
-                {
-                    MaximalLocalProcess = 1
-                },
                 Globals =
                 {
                     StartPoint = startPoint,
-                    EndPoint = startPoint + TimeSpan.FromHours(24),
+                    EndPoint = startPoint + TimeSpan.FromHours(12),
                     DeltaTUnit = TimeSpanUnit.Seconds,
                     ShowConsoleProgress = true,
                     OutputTarget = OutputTargetType.SqLite,
@@ -153,7 +182,7 @@ namespace SOHModelStarter
                     new AgentMapping
                     {
                         Name = nameof(Citizen),
-                        InstanceCount = 1,
+                        InstanceCount = 100,
                         OutputTarget = OutputTargetType.SqLite,
                         File = Path.Combine("res", "agent_inits", "CitizenInit10k.csv"),
 
