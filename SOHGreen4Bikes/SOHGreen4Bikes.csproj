@@ -5,16 +5,18 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>
-
+    
     <ItemGroup>
-      <None Update="Dockerfile">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <Content Include="config.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="resources\*.*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
-
+    
     <ItemGroup>
       <ProjectReference Include="..\SOHMultimodalModel\SOHMultimodalModel.csproj" />
-      <ProjectReference Include="..\SOHResources\SOHResources.csproj" />
     </ItemGroup>
 
 </Project>

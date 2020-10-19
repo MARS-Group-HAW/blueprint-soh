@@ -87,28 +87,6 @@ namespace SOHModelStarter
                     DeltaTUnit = TimeSpanUnit.Seconds,
                     ShowConsoleProgress = true,
                     OutputTarget = OutputTargetType.SqLite,
-                    // SgeOption =
-                    // {
-                    //     File = "bicycle.graph",
-                    //     Files = new object[3]
-                    //     {
-                    //         {
-                    //             GraphFile = "bicycle.graphml",
-                    //             Modality = "Bicycle",
-                    //             PreventCollision = false
-                    //         },
-                    //         {
-                    //             GraphFile = "bicycle.graphml",
-                    //             Modality = "",
-                    //             PreventCollision = false
-                    //         },
-                    //         {
-                    //             GraphFile = "car.graphml",
-                    //             Modality = "Car",
-                    //             PreventCollision = true
-                    //         }
-                    //     }
-                    // },
                     SqLiteOptions =
                     {
                         DistinctTable = false

@@ -10,14 +10,11 @@ using Mars.Components.Starter;
 using Mars.Core.Model.Entities;
 using Mars.Core.Simulation;
 using Mars.Interfaces;
+using SOHBicycleModel.Model;
 using SOHBicycleModel.Rental;
-using SOHCarModel.Model;
-using SOHCarModel.Parking;
-using SOHMultimodalModel.Layers;
-using SOHMultimodalModel.Layers.TrafficLight;
 using SOHMultimodalModel.Model;
 using SOHMultimodalModel.Output.Trips;
-using SOHResources;
+using BicycleLayer = SOHMultimodalModel.Model.BicycleLayer;
 
 namespace SOHGreen4Bikes
 {
@@ -34,34 +31,27 @@ namespace SOHGreen4Bikes
 
             var description = new ModelDescription();
 
-            description.AddLayer<CarParkingLayer>();
-            description.AddLayer<CarLayer>();
             description.AddLayer<BicycleParkingLayer>();
-            description.AddLayer<VectorBuildingsLayer>();
-            description.AddLayer<VectorLanduseLayer>();
-            description.AddLayer<VectorPoiLayer>();
-            description.AddLayer<MediatorLayer>();
-            description.AddLayer<CitizenLayer>();
-            description.AddLayer<TrafficLightLayer>();
-            description.AddAgent<Citizen, CitizenLayer>();
-            
+            description.AddLayer<CycleTravelerLayer>();
+            description.AddLayer<BicycleLayer>();
+            description.AddLayer<WalkLayer>();
+            description.AddLayer<CycleTravelerSchedulerLayer>();
 
-            var config = CreateDefaultConfig();
+            description.AddAgent<CycleTraveler, CycleTravelerLayer>();
+            description.AddEntity<Bicycle>();
+            
+            
+            
 
             ISimulationContainer application;
 
             if (args != null && args.Any())
             {
-                var file = File.ReadAllText(Path.Combine(ResourcesConstants.SimConfigFolder, args[0]));
-                var simConfig = SimulationConfig.Deserialize(file);
-                Console.WriteLine($"Use simulation config: {args[0]}");
-                Console.WriteLine(simConfig.Serialize());
-                application = SimulationStarter.BuildApplication(description, simConfig);
+                application = SimulationStarter.BuildApplication(description, args);
             }
             else
             {
-                Console.WriteLine("Use default simulation config:");
-                Console.WriteLine(config.Serialize());
+                var config = CreateDefaultConfig();
                 application = SimulationStarter.BuildApplication(description, config);
             }
 
@@ -70,15 +60,14 @@ namespace SOHGreen4Bikes
             var watch = Stopwatch.StartNew();
             var state = simulation.StartSimulation();
 
-            var layers = state.Model.AllActiveLayers;
+            var layers = state.Model.Layers;
 
 
             foreach (var layer in layers)
             {
-                if (layer is CitizenLayer citizenLayer)
+                if (layer.Value is CycleTravelerLayer cycleTravelerLayer)
                 {
-                    var citizens = citizenLayer.PedestrianMap.Values;
-                    TripsOutputAdapter.PrintTripResult(citizens);
+                    TripsOutputAdapter.PrintTripResult(cycleTravelerLayer.Travelers.Values);
                 }
             }
 
@@ -101,88 +90,51 @@ namespace SOHGreen4Bikes
                     EndPoint = startPoint + TimeSpan.FromHours(24),
                     DeltaTUnit = TimeSpanUnit.Seconds,
                     ShowConsoleProgress = true,
-                    OutputTarget = OutputTargetType.Csv,
-                    CsvOptions =
-                    {
-                        FileSuffix = "_" + suffix,
-                        Delimiter = ";",
-                        IncludeHeader = true
-                    },
-                    SqLiteOptions =
-                    {
-                        DistinctTable = false
-                    },
-                    PostgresSqlOptions =
-                    {
-                        Host = "127.0.0.1",
-                        HostUserName = "root",
-                        HostPassword = "password",
-                        DistinctTable = true,
-                        DatabaseName = "green4bikes"
-                    }
+                    OutputTarget = OutputTargetType.None
                 },
                 LayerMappings =
                 {
                     new LayerMapping
                     {
-                        Name = nameof(TrafficLightLayer),
-                        File = ResourcesConstants.TrafficLightsHarburgZentrum
+                        Name = nameof(WalkLayer),
+                        File = Path.Combine("resources", "harburg_walk_graph.geojson")
                     },
                     new LayerMapping
                     {
-                        Name = nameof(VectorBuildingsLayer),
-                        File = Path.Combine(ResourcesConstants.VectorDataFolder, "Buildings_Harburg_zentrum.geojson")
-                    },
-                    new LayerMapping
-                    {
-                        Name = nameof(VectorLanduseLayer),
-                        File = Path.Combine(ResourcesConstants.VectorDataFolder, "Landuse_Harburg_zentrum.geojson")
-                    },
-                    new LayerMapping
-                    {
-                        Name = nameof(VectorPoiLayer),
-                        File = Path.Combine(ResourcesConstants.VectorDataFolder, "POIS_Harburg_zentrum.geojson")
-                    },
-                    new LayerMapping
-                    {
-                        Name = nameof(CarLayer),
-                        File = Path.Combine(ResourcesConstants.NetworkFolder, "harburg_zentrum_drive_graph.geojson")
-                    },
-                    new LayerMapping
-                    {
-                        Name = nameof(CarParkingLayer),
-                        File = Path.Combine(ResourcesConstants.VectorDataFolder, "Parking_Harburg_zentrum.geojson")
+                        Name = nameof(BicycleLayer),
+                        File = Path.Combine("resources", "harburg_bike_graph.geojson")
                     },
                     new LayerMapping
                     {
                         Name = nameof(BicycleParkingLayer),
-                        File = Path.Combine(ResourcesConstants.VectorDataFolder,
-                            "Bicycle_Rental_Harburg_zentrum.geojson")
+                        File = Path.Combine("resources", "harburg_rental_stations.geojson")
                     },
                     new LayerMapping
                     {
-                        Name = nameof(CitizenLayer),
-                        File = Path.Combine(ResourcesConstants.NetworkFolder, "harburg_zentrum_walk_graph.geojson"),
-                        IndividualMapping =
-                        {
-                            new IndividualMapping {Name = "ParkingOccupancy", Value = 0.779}
-                        }
+                        Name = nameof(CycleTravelerSchedulerLayer),
+                        File = Path.Combine("resources", "cycle_traveler.csv")
                     }
                 },
                 AgentMappings =
                 {
                     new AgentMapping
                     {
-                        Name = nameof(Citizen),
-                        InstanceCount = 10,
-                        File = Path.Combine("res", "agent_inits", "CitizenInit10k.csv"),
-                        Options = {{"csvSeparator", ';'}},
+                        Name = nameof(CycleTraveler),
+                        OutputTarget = OutputTargetType.None,
                         IndividualMapping =
                         {
                             new IndividualMapping {Name = "ResultTrajectoryEnabled", Value = true},
                             new IndividualMapping {Name = "CapabilityCycling", Value = true},
                             new IndividualMapping {Name = "CapabilityDrivingWithProbability", Value = 0.326}
                         }
+                    }
+                },
+                EntityMappings =
+                {
+                    new EntityMapping
+                    {
+                        Name = nameof(Bicycle),
+                        File = Path.Combine("resources", "bicycle.csv")
                     }
                 }
             };

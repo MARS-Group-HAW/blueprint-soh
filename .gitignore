@@ -345,3 +345,5 @@ Documentation/simulation
 Documentation/site
 *.sqlite
 *.dll
+SOHFerryTransferBox/SOHFerryTransfer
+SOHGreen4Bikes/SOHGreen4Bikes
