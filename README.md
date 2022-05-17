@@ -6,12 +6,6 @@ The SmartOpenHamburg model is an agent-based simulation model for the representa
 
 The repository contains three projects and a number of libraries to support them. For more information on each model and the libraries, please check out the README.md in the respective subdirectory.
 
-Models:
-
-1. SOHModelStarter: a model that is geared towards determining optimal routes using several modes of travel (modalities). Per default, the model is set in the district of Altona, Hamburg to run for 24 simulation hours with one agent (type `Citizen`) who is able to travel by walking on foot, riding a bicycle, and driving a car. The agent has a predefined daily routine which includes activities like work, errands, and others.
-2. SOHGreen4Bikes: a model that is focused on travel by bike (to ease network congestion in and around the simulation environment) in a small section of the central part of the district of Harburg, Hamburg. The model is set to run with 10 agents (type: `Citizen`) for 24 simulation hours. These agents have predefined daily routines which include activities like work, errands, and others.
-3. SOHFerryTransferBox: 
-
 ## Quick Start
 
 Start and adjusting the model requires the following steps.
@@ -22,23 +16,45 @@ Clone the Git Repo:
 git clone https://git.haw-hamburg.de/mars/model-smart-open-hamburg-po.git
 ```
 
-Download and install the SDK for NetCore 3.1 from the official [website](https://dotnet.microsoft.com/download/dotnet-core/3.1).
-
-Navigate into the cloned directory and make sure that all required dependencies are installed automatically by building the model in the directory where the SOHModel.sln file is located:
+Download and install the SDK for NetCore from the official [website](https://dotnet.microsoft.com/download/dotnet-core/).  Navigate into the cloned directory and make sure that all required dependencies are installed automatically by building the model in the directory where the SOHModel.sln file is located:
 
 ```
 dotnet build
 ```
 
-We have prepared a scenario in the project SOHModelStarter for the entry with 10000 agents that you can start immediately. To be able to analyze results afterwards, we recommend the use of a relational database for queries via SQL. Other formats are also possible. We have set a local SQlite as default for you. For other output settings, please refer to the [Online Documentation].
+We have prepared a scenario in the project ``SOHTravellingBox`` for the entry with agents, travelling within the area of Hamburg Dammtor, which you can start immediately. 
 
 Navigate to the folder and start the model:
 
 ```
-cd SOHModelStarter
+cd SOHTravellingBox
 dotnet run
 ```
 
-The results of the model are stored after each simulated second for each agent involved. A new SQLite database with the file name *+mars.sqlite** was created in the folder **bin/Debug/netcoreapp3.1** where all data is stored.
+This runs the simulation and creates a file call `trips.geojson`. Open [kepler.gl](https://kepler.gl/demo) and import the file via drag & drop. See the trajectories which were computed by the simulation.
 
-Use your preferred tool for query or visualization. We recommend the tool [Falcon SQL](https://github.com/plotly/falcon) with which you can analyze relational queries in different ways with diagrams.
+
+## Update local Model Development
+
+Since we cannot update your own model development with this as baseline. We recommend to use this Git repository as *second* Git source. Therefore
+
+Create your own git repo (*if not already done*) in your desired local folder.
+``bash
+git init
+``
+
+Add this repository as an Git remote URL beside your own repo address.
+
+``bash
+git remote add soh git@git.haw-hamburg.de:mars/model-smart-open-hamburg-po.git
+``
+
+This command will add one more remote source to your local git repo called ``soh``.
+
+In case of any updates, use the the ``git pull`` command to fetch and load any remote changes into your local repository area:
+
+```bash
+git pull soh master
+```
+
+This will pull the `master` branch and all its changes into your own repository. In case that something has a conflict with your own model code, resolve this my creating an own project with unique name as recommendation.
