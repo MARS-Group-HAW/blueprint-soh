@@ -24,8 +24,8 @@ namespace SOHTrainBox
             description.AddLayer<TrainLayer>();
             description.AddLayer<TrainSchedulerLayer>();
             description.AddLayer<TrainStationLayer>();
-            description.AddLayer<TrainRouteLayer>(new[] {typeof(ITrainRouteLayer)});
-            // description.AddLayer<TrainGtfsRouteLayer>(new[] {typeof(ITrainRouteLayer)});
+            // description.AddLayer<TrainRouteLayer>(new[] {typeof(ITrainRouteLayer)});
+            description.AddLayer<TrainGtfsRouteLayer>(new[] {typeof(ITrainRouteLayer)});
             
             description.AddLayer<PassengerTravelerLayer>();
             description.AddLayer<AgentSchedulerLayer<PassengerTraveler, PassengerTravelerLayer>>("PassengerTravelerSchedulerLayer");
