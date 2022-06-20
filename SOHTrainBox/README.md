@@ -60,12 +60,13 @@ Every train driver executes one line and is removed from the simulation. In the 
 Within the given period (``startTime`` to ``endTime``) drivers are created periodically with the given interval (``spawningIntervalInMinutes``). In providing an example starting at 5 o'clock every 10 minutes, a driver starts to perform line U1.
 The parameter ``minimumBoardingTimeInSeconds`` describes how many seconds the train will at least wait at every station for exchange of passengers.
 The parameter ``spawningAmount`` defines how many drivers start simultaneously.
+The parameter ``reversedTrainRoute`` provides the possibility to start trains in the opposite direction (the route will the be reversed).
 
 
 
-| line |startTime|endTime|spawningIntervalInMinutes|minimumBoardingTimeInSeconds|spawningAmount|gender|mass|perceptionInMeter
-|------|---------|-------|-------------------------|----------------------------|--------------|------|----|------------------|
-| U1   |5:00     |18:00  |10                       |20                          |1             |female|60  |1.0               |
+|line|startTime|endTime|spawningIntervalInMinutes|minimumBoardingTimeInSeconds|spawningAmount|reversedTrainRoute
+|---|---|---|---|---|---|---|
+|U1|5:00|18:00|10|20|1|false|
 
 #### Station Re-/placement
 

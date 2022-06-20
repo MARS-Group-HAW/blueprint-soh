@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SOHMultimodalModel\SOHMultimodalModel.csproj" />
+      <ProjectReference Include="..\SOHMultimodalModel\SOHMultimodalModel.csproj" />
     </ItemGroup>
 
 </Project>

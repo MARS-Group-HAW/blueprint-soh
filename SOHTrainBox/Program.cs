@@ -7,6 +7,7 @@ using Mars.Interfaces;
 using Mars.Interfaces.Model;
 using SOHDomain.Graph;
 using SOHMultimodalModel.Model;
+using SOHMultimodalModel.Output.Trips;
 using SOHTrainModel.Model;
 using SOHTrainModel.Route;
 using SOHTrainModel.Station;
@@ -24,8 +25,8 @@ namespace SOHTrainBox
             description.AddLayer<TrainLayer>();
             description.AddLayer<TrainSchedulerLayer>();
             description.AddLayer<TrainStationLayer>();
-            // description.AddLayer<TrainRouteLayer>(new[] {typeof(ITrainRouteLayer)});
-            description.AddLayer<TrainGtfsRouteLayer>(new[] {typeof(ITrainRouteLayer)});
+            description.AddLayer<TrainRouteLayer>(new[] {typeof(ITrainRouteLayer)});
+            // description.AddLayer<TrainGtfsRouteLayer>(new[] {typeof(ITrainRouteLayer)});
             
             description.AddLayer<PassengerTravelerLayer>();
             description.AddLayer<AgentSchedulerLayer<PassengerTraveler, PassengerTravelerLayer>>("PassengerTravelerSchedulerLayer");
@@ -54,6 +55,13 @@ namespace SOHTrainBox
             watch.Stop();
 
             Console.WriteLine($"Executed iterations {state.Iterations} lasted {watch.Elapsed}");
+
+            // var (_, layer) = state.Model.Layers.FirstOrDefault(pair => pair.Value is PassengerTravelerLayer);
+            // if (layer != null)
+            // {
+            //     var agents = ((PassengerTravelerLayer)layer).Agents.Values;
+            //     TripsOutputAdapter.PrintTripResult(agents);
+            // }
         }
     }
 }

@@ -11,15 +11,22 @@
       "name": "PassengerTraveler",
       "outputs": [
         {
-          "kind": "trips"
-        },
-        {
-          "kind": "csv"
+          "kind": "trips",
+          "outputConfiguration": {
+            "tripsFields": [
+              "ActiveCapability"
+            ]
+          }
         }
       ]
     },
     {
-      "name": "TrainDriver"
+      "name": "TrainDriver",
+      "outputs": [
+        {
+          "kind": "trips"
+        }
+      ]
     }
   ],
   "layers": [
@@ -32,15 +39,20 @@
         {
           "file": "resources/hamburg_rail_station_areas_drive_graph.geojson",
           "inputConfiguration": {
-            "modalities": ["Walking"],
+            "modalities": [
+              "Walking"
+            ],
             "isBidirectedGraph": true
           }
         },
         {
           "file": "resources/hamburg_u1_north_graph.geojson",
           "inputConfiguration": {
-            "modalities": ["TrainDriving"],
-            "isBidirectedGraph": true
+            "modalities": [
+              "TrainDriving"
+            ],
+            "isBidirectedGraph": true,
+            "noHelperNodes": true
           }
         }
       ]
