@@ -1,0 +1,8 @@
+Name;Value
+population;1415
+household;770
+singleHousehold;458
+familyDistanceThreshold;20
+minTargetDistance;2
+numSpawnPoints;233
+evacuationPoint;POINT (10.0213807 53.5248662)

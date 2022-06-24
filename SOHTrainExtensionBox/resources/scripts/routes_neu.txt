@@ -1,0 +1,7 @@
+"route_id","agency_id","route_short_name","route_long_name","route_type","route_color","route_text_color","route_desc"
+"9476_109","361","S31","Altona > Dammtor > Hauptbahnhof > Berliner Tor/Neugraben","109","#ff0000","#ff0000",""
+"9475_109","361","S3","","109","#ff0000","#ff0000",""
+"9474_109","361","S21","Elbgaustraße/Altona > Dammtor > Hauptbahnhof > Bergedorf > Aumühle","109","#ff0000","#ff0000",""
+"9473_109","361","S2","Altona > Jungfernstieg > Hauptbahnhof > Bergedorf","109","#ff0000","#ff0000",""
+"9472_109","361","S11","Blankenese > Altona > Dammtor > Hauptbahnhof > Barmbek > Poppenbüttel","109","#ff0000","#ff0000",""
+"5111_109","361","S1","Wedel > Hauptbahnhof > Ohlsdorf > Hamburg Airport/Poppenbüttel","109","#ff0000","#ff0000",""
