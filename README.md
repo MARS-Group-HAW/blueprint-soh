@@ -16,7 +16,7 @@ Clone the Git Repo:
 ```
 git clone https://git.haw-hamburg.de/mars/model-smart-open-hamburg-po.git
 ```
-
+[Program.cs](SOHTravellingBox%2FProgram.cs)
 Download and install the SDK for NetCore from the official [website](https://dotnet.microsoft.com/download/dotnet-core/).  Navigate into the cloned directory and make sure that all required dependencies are installed automatically by building the model in the directory where the SOHModel.sln file is located:
 
 ```
