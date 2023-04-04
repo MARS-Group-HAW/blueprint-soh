@@ -347,3 +347,4 @@ Documentation/site
 *.dll
 SOHFerryTransferBox/SOHFerryTransfer
 SOHGreen4Bikes/SOHGreen4Bikes
+.ipynb_checkpoints
