@@ -22,7 +22,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SOHMultimodalModel\SOHMultimodalModel.csproj" />
+        <PackageReference Include="Mars.Life.Simulations" Version="4.5.2" />
+        <PackageReference Include="Mars.Life.SOH" Version="4.5.2" />
     </ItemGroup>
 
     <ItemGroup>

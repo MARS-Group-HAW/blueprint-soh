@@ -20,13 +20,11 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
+    
 
     <ItemGroup>
-        <ProjectReference Include="..\SOHMultimodalModel\SOHMultimodalModel.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Mars.Life.Simulations" Version="4.5.1" />
+        <PackageReference Include="Mars.Life.Simulations" Version="4.5.2" />
+        <PackageReference Include="Mars.Life.SOH" Version="4.5.2" />
     </ItemGroup>
 
 </Project>

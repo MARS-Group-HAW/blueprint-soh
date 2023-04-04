@@ -20,13 +20,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Mars.Components" Version="4.5.1" />
-      <PackageReference Include="Mars.Interfaces" Version="4.5.1" />
-    </ItemGroup>
-
-    <ItemGroup>
+        <PackageReference Include="Mars.Life.Simulations" Version="4.5.2" />
+        <PackageReference Include="Mars.Life.SOH" Version="4.5.2" />
       <ProjectReference Include="..\SOHDemonstrationModel\SOHDemonstrationModel.csproj" />
-      <ProjectReference Include="..\SOHDomain\SOHDomain.csproj" />
     </ItemGroup>
 
 </Project>
